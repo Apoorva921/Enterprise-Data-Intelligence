@@ -33,5 +33,16 @@ class PipelineService:
         return self.runner.get_dag_runs(limit=limit)
 
     def trigger_pipeline(self, dag_id: str) -> Dict[str, Any]:
+        if dag_id == "all":
+            results = self.runner.run_all_dags()
+            total_duration = sum(r.get("duration_seconds", 0) for r in results)
+            all_success = all(r.get("state") == "SUCCESS" for r in results)
+            return {
+                "dag_id": "all",
+                "run_id": f"batch_{len(results)}_dags",
+                "state": "SUCCESS" if all_success else "PARTIAL_SUCCESS",
+                "duration_seconds": round(total_duration, 2),
+                "runs": results,
+            }
         return self.runner.run_dag(dag_id)
 

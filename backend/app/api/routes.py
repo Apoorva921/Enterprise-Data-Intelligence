@@ -244,18 +244,90 @@ def get_dlq_messages(limit: int = Query(20, ge=1, le=100)):
     }
 
 
+@router.post("/streaming/simulate")
+def simulate_stream_traffic(count: int = Query(25, ge=1, le=100)):
+    """Simulates real-time e-commerce event traffic across Kafka topics."""
+    import random
+    from datetime import datetime, timezone
+    from ingestion.streaming.kafka_producer import ECommerceStreamProducer, SimulatedMessageQueue
+
+    producer = ECommerceStreamProducer()
+    for _ in range(count):
+        ev_type = random.choice(["order", "payment", "customer", "inventory"])
+        if ev_type == "order":
+            order = producer.generate_simulated_order_event()
+            producer.produce("orders", order["order_id"], order)
+        elif ev_type == "payment":
+            order_id = f"STR-ORD-{random.randint(100000, 999999)}"
+            cust_id = f"CUST-{random.randint(100000, 105000)}"
+            amt = round(random.uniform(25.0, 500.0), 2)
+            pay = producer.generate_simulated_payment_event(order_id, cust_id, amt)
+            producer.produce("payments", pay["payment_id"], pay)
+        elif ev_type == "customer":
+            ev = {
+                "event_id": f"EVT-{random.randint(100000, 999999)}",
+                "customer_id": f"CUST-{random.randint(100000, 105000)}",
+                "event_type": random.choice(["PAGE_VIEW", "ADD_TO_CART", "SEARCH"]),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+            }
+            producer.produce("customer_events", ev["event_id"], ev)
+        else:
+            inv = {
+                "inventory_id": f"INV-{random.randint(100000, 999999)}",
+                "sku": f"PROD-SKU-{random.randint(1000, 1050)}",
+                "change_quantity": random.choice([-1, -2, 5, 10]),
+                "warehouse_location": "WH-US-EAST",
+                "updated_at": datetime.now(timezone.utc).isoformat(),
+            }
+            producer.produce("inventory_updates", inv["inventory_id"], inv)
+
+    return {"status": "SUCCESS", "events_published": count}
+
+
+@router.post("/streaming/simulate-poison")
+def simulate_poison_anomaly():
+    """Publishes an intentional invalid negative order to trigger DLQ quarantine."""
+    import random
+    from datetime import datetime, timezone
+
+    poison = {
+        "order_id": f"POISON-{random.randint(1000, 9999)}",
+        "customer_id": f"CUST-ANOMALY-{random.randint(100, 999)}",
+        "order_date": datetime.now(timezone.utc).isoformat(),
+        "status": "INVALID",
+        "total_amount": -185.50,
+        "shipping_region": "Unknown",
+        "channel": "Web",
+    }
+    reason = "Schema Validation Error: 1 validation error for StreamOrderEvent\ntotal_amount\n  Value error, Order total_amount cannot be negative: -185.50"
+    streaming_service.dlq.route_to_dlq(
+        topic="orders",
+        raw_payload=poison,
+        error_reason=reason,
+        metadata={"simulation": True, "quarantined_by": "KafkaSchemaValidator"}
+    )
+    return {"status": "QUARANTINED", "reason": reason}
+
+
 # ----------------------------------------------------------------------------
 # 7. DATA QUALITY & QUARANTINE (GREAT EXPECTATIONS)
 # ----------------------------------------------------------------------------
 @router.get("/data-quality")
-def get_data_quality():
+def get_data_quality(refresh: bool = Query(False)):
     """Returns latest Great Expectations validation reports and quarantine audit."""
     report_file = os.path.abspath("data/data_quality/reports/latest_validation_report.json")
-    if os.path.exists(report_file):
+    if not refresh and os.path.exists(report_file):
         with open(report_file, "r", encoding="utf-8") as f:
             return json.load(f)
 
-    # If report file doesn't exist yet, run validation on-demand
+    # If report file doesn't exist or refresh requested, run validation on-demand
+    dq = DataQualityValidationRunner()
+    return dq.run_complete_validation()
+
+
+@router.post("/data-quality/run")
+def run_data_quality_audit():
+    """Explicitly executes full Great Expectations audit and returns fresh results."""
     dq = DataQualityValidationRunner()
     return dq.run_complete_validation()
 

@@ -7,6 +7,7 @@ import os
 import sys
 import time
 import json
+import uuid
 import sqlite3
 from datetime import datetime, timezone
 from typing import Dict, Any, List
@@ -41,44 +42,67 @@ class AirflowRunner:
         os.makedirs(os.path.dirname(self.db_path), exist_ok=True)
         self._init_history_db()
 
+    def _get_connection(self):
+        conn = sqlite3.connect(self.db_path, timeout=30.0)
+        try:
+            conn.execute("PRAGMA busy_timeout=30000;")
+            conn.execute("PRAGMA journal_mode=WAL;")
+        except Exception:
+            pass
+        return conn
+
     def _init_history_db(self):
-        conn = sqlite3.connect(self.db_path)
-        c = conn.cursor()
-        c.execute("""
-            CREATE TABLE IF NOT EXISTS dag_runs (
-                run_id TEXT PRIMARY KEY,
-                dag_id TEXT NOT NULL,
-                execution_date TEXT NOT NULL,
-                state TEXT NOT NULL,
-                duration_seconds REAL NOT NULL,
-                tasks_executed INTEGER NOT NULL,
-                details TEXT
-            )
-        """)
-        conn.commit()
-        conn.close()
+        with self._get_connection() as conn:
+            c = conn.cursor()
+            c.execute("""
+                CREATE TABLE IF NOT EXISTS dag_runs (
+                    run_id TEXT PRIMARY KEY,
+                    dag_id TEXT NOT NULL,
+                    execution_date TEXT NOT NULL,
+                    state TEXT NOT NULL,
+                    duration_seconds REAL NOT NULL,
+                    tasks_executed INTEGER NOT NULL,
+                    details TEXT
+                )
+            """)
+            conn.commit()
 
     def record_run(self, dag_id: str, state: str, duration: float, tasks: int, details: str = "") -> str:
-        conn = sqlite3.connect(self.db_path)
-        c = conn.cursor()
-        run_id = f"manual__{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S')}_{dag_id[:10]}"
+        run_id = f"manual__{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%f')}_{dag_id[:10]}_{uuid.uuid4().hex[:6]}"
         now = datetime.now(timezone.utc).isoformat()
-        c.execute("""
-            INSERT INTO dag_runs (run_id, dag_id, execution_date, state, duration_seconds, tasks_executed, details)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-        """, (run_id, dag_id, now, state, duration, tasks, details))
-        conn.commit()
-        conn.close()
+        
+        for attempt in range(5):
+            try:
+                with self._get_connection() as conn:
+                    c = conn.cursor()
+                    c.execute("""
+                        INSERT OR REPLACE INTO dag_runs (run_id, dag_id, execution_date, state, duration_seconds, tasks_executed, details)
+                        VALUES (?, ?, ?, ?, ?, ?, ?)
+                    """, (run_id, dag_id, now, state, duration, tasks, details))
+                    conn.commit()
+                return run_id
+            except sqlite3.OperationalError as e:
+                if attempt < 4:
+                    time.sleep(0.2 * (attempt + 1))
+                else:
+                    print(f"Warning: Failed to record dag run after 5 attempts: {e}")
+                    return run_id
         return run_id
 
     def get_dag_runs(self, limit: int = 50) -> List[Dict[str, Any]]:
-        conn = sqlite3.connect(self.db_path)
-        conn.row_factory = sqlite3.Row
-        c = conn.cursor()
-        c.execute("SELECT * FROM dag_runs ORDER BY execution_date DESC LIMIT ?", (limit,))
-        rows = [dict(r) for r in c.fetchall()]
-        conn.close()
-        return rows
+        for attempt in range(5):
+            try:
+                with self._get_connection() as conn:
+                    conn.row_factory = sqlite3.Row
+                    c = conn.cursor()
+                    c.execute("SELECT * FROM dag_runs ORDER BY execution_date DESC LIMIT ?", (limit,))
+                    return [dict(r) for r in c.fetchall()]
+            except sqlite3.OperationalError:
+                if attempt < 4:
+                    time.sleep(0.1 * (attempt + 1))
+                else:
+                    return []
+        return []
 
     def run_dag(self, dag_id: str) -> Dict[str, Any]:
         """Runs the specified Airflow DAG workflow."""

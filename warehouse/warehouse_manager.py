@@ -44,6 +44,7 @@ class WarehouseManager:
 
     def get_kpi_summary(self) -> Dict[str, Any]:
         """Calculates executive KPI metrics directly via fast analytical SQL."""
+        cur = self.conn.cursor()
         try:
             sql = """
                 SELECT 
@@ -54,14 +55,14 @@ class WarehouseManager:
                     ROUND(SUM(CASE WHEN status = 'COMPLETED' THEN 1 ELSE 0 END) * 100.0 / COUNT(order_id), 2) as completion_rate
                 FROM fact_orders;
             """
-            res = self.conn.execute(sql).fetchone()
+            res = cur.execute(sql).fetchone()
             
             pay_sql = """
                 SELECT 
                     ROUND(SUM(CASE WHEN is_successful THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2) as payment_success_rate
                 FROM fact_payments;
             """
-            pay_res = self.conn.execute(pay_sql).fetchone()
+            pay_res = cur.execute(pay_sql).fetchone()
 
             return {
                 "total_orders": res[0] or 0,
@@ -81,6 +82,8 @@ class WarehouseManager:
                 "payment_success_rate": 0.0,
                 "error": str(e),
             }
+        finally:
+            cur.close()
 
     def close(self):
         self.conn.close()

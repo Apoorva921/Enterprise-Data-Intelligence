@@ -26,10 +26,10 @@ export function App() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
+    <div className="min-h-screen bg-[#f8fafc] bg-grid-pattern text-slate-900 flex flex-col font-sans selection:bg-indigo-500 selection:text-white">
       <Navbar activeTab={activeTab} setActiveTab={setActiveTab} isLive={isLive} />
 
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {activeTab === 'overview' && <OverviewTab />}
         {activeTab === 'pipelines' && <PipelinesTab />}
         {activeTab === 'streaming' && <StreamingTab />}
@@ -37,12 +37,25 @@ export function App() {
         {activeTab === 'analytics' && <AnalyticsTab />}
       </main>
 
-      <footer className="border-t border-slate-900 bg-slate-950/80 py-4 text-center text-xs text-slate-500">
-        Enterprise Real-Time Data Intelligence Platform &copy; 2024. All pipelines, streaming and dbt models active.
+      <footer className="border-t border-slate-200 bg-white py-4 px-6 shadow-xs">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] font-mono text-slate-600">
+          <div className="flex items-center space-x-3">
+            <span className="inline-block w-2 h-2 rounded-full bg-emerald-500"></span>
+            <span className="font-semibold text-slate-800">DATA LAKEHOUSE CLUSTER: PRODUCTION</span>
+            <span className="text-slate-300">|</span>
+            <span>ENGINE: DUCKDB / BIGQUERY</span>
+            <span className="text-slate-300">|</span>
+            <span>STREAM: KAFKA V3.7</span>
+          </div>
+          <div>
+            <span className="font-semibold text-indigo-700 bg-indigo-50 border border-indigo-200 px-2 py-0.5 rounded">
+              SYSTEM AUDIT: 100% SLA COMPLIANT
+            </span>
+          </div>
+        </div>
       </footer>
     </div>
   );
 }
 
 export default App;
-

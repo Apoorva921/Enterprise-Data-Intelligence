@@ -25,8 +25,15 @@ logger = logging.getLogger("dbtRunner")
 
 
 class DBTRunner:
+    _shared_warehouse = None
+
     def __init__(self, warehouse: WarehouseManager = None):
-        self.warehouse = warehouse or WarehouseManager()
+        if warehouse:
+            self.warehouse = warehouse
+        else:
+            if DBTRunner._shared_warehouse is None:
+                DBTRunner._shared_warehouse = WarehouseManager()
+            self.warehouse = DBTRunner._shared_warehouse
 
     def run_models(self) -> Dict[str, Any]:
         """Compiles and executes dbt staging and mart models."""
@@ -94,6 +101,12 @@ class DBTRunner:
         print("\n============================================================")
         print(">> Running dbt Tests & Quality Assertions")
         print("============================================================")
+
+        # Ensure staging models exist on warehouse connection
+        try:
+            self.warehouse.conn.execute("SELECT 1 FROM stg_customers LIMIT 1;")
+        except Exception:
+            self.run_models()
 
         tests = [
             ("unique_stg_customers_customer_id", "SELECT customer_id, COUNT(*) FROM stg_customers GROUP BY customer_id HAVING COUNT(*) > 1;"),

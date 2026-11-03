@@ -1,82 +1,164 @@
 import React, { useEffect, useState } from 'react';
-import { BarChart3, Globe, Layers, Download, ExternalLink } from 'lucide-react';
+import { 
+  BarChart3, 
+  Globe, 
+  Layers, 
+  ExternalLink, 
+  Database, 
+  RefreshCw, 
+  Download, 
+  Calendar 
+} from 'lucide-react';
 import { RevenueAnalytics } from '../types';
 import { fetchRevenueAnalytics } from '../services/api';
 
 export const AnalyticsTab: React.FC = () => {
   const [data, setData] = useState<RevenueAnalytics | null>(null);
   const [loading, setLoading] = useState(true);
+  const [selectedDays, setSelectedDays] = useState<number>(30);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const loadData = async (days = selectedDays) => {
+    setIsRefreshing(true);
+    try {
+      const res = await fetchRevenueAnalytics(days);
+      setData(res);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+      setIsRefreshing(false);
+    }
+  };
 
   useEffect(() => {
-    async function load() {
-      try {
-        const res = await fetchRevenueAnalytics();
-        setData(res);
-      } catch (e) {
-        console.error(e);
-      } finally {
-        setLoading(false);
-      }
-    }
-    load();
-  }, []);
+    loadData(selectedDays);
+  }, [selectedDays]);
+
+  const handleExportData = () => {
+    if (!data) return;
+    const csvRows = [
+      ['Date', 'Total Orders', 'Gross Revenue (USD)'],
+      ...data.daily_trends.map((d) => [d.order_day, d.total_orders, d.total_gross_revenue.toFixed(2)]),
+    ];
+    const csvContent = 'data:text/csv;charset=utf-8,' + csvRows.map((r) => r.join(',')).join('\n');
+    const encoded = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.href = encoded;
+    link.download = `revenue_trends_${selectedDays}d.csv`;
+    link.click();
+  };
 
   if (loading && !data) {
-    return <div className="p-8 text-center text-slate-400">Loading business analytics...</div>;
+    return <div className="p-8 text-center text-slate-500 font-mono text-xs">Loading warehouse analytical marts...</div>;
   }
 
   const maxRevenue = data?.daily_trends.reduce((max, d) => Math.max(max, d.total_gross_revenue), 1) ?? 1;
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      {/* Top Header & Interactive Timeframe Controls */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-white border border-slate-200 rounded-lg p-5 shadow-xs">
         <div>
-          <h2 className="text-xl font-bold text-white">Business Intelligence & Dimensional Analytics</h2>
-          <p className="text-xs text-slate-400">Curated revenue data marts, regional sales heat, and Power BI DAX integration</p>
+          <div className="flex items-center space-x-2">
+            <h2 className="text-xl font-bold text-slate-900 tracking-tight">Warehouse Marts &amp; Dimensional Analytics</h2>
+            <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-blue-50 text-blue-800 border border-blue-200 font-bold">
+              STAR SCHEMA
+            </span>
+          </div>
+          <p className="text-xs text-slate-500 font-mono mt-0.5">
+            KIMBALL STAR SCHEMA | AGGREGATED DAILY REVENUE MARTS | GEOGRAPHICAL DISTRIBUTION
+          </p>
         </div>
-        <div className="flex items-center space-x-2">
+
+        {/* Action Buttons Toolbar */}
+        <div className="flex flex-wrap items-center gap-2.5">
+          {/* Timeframe Toggle Buttons */}
+          <div className="flex items-center rounded-md p-1 bg-slate-100 border border-slate-200">
+            <span className="text-[11px] text-slate-500 font-mono px-2 flex items-center">
+              <Calendar className="w-3 h-3 mr-1" />
+              Window:
+            </span>
+            {[7, 14, 30, 90].map((d) => (
+              <button
+                key={d}
+                onClick={() => setSelectedDays(d)}
+                className={`px-2.5 py-1 rounded text-xs font-semibold font-mono transition ${
+                  selectedDays === d
+                    ? 'bg-white text-indigo-700 shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                {d}d
+              </button>
+            ))}
+          </div>
+
+          {/* Export Button */}
+          <button
+            onClick={handleExportData}
+            className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-md bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 text-xs font-semibold shadow-xs transition"
+            title="Export trend series to CSV"
+          >
+            <Download className="w-3.5 h-3.5 text-indigo-600" />
+            <span>Export CSV</span>
+          </button>
+
+          {/* Refresh Button */}
+          <button
+            onClick={() => loadData(selectedDays)}
+            disabled={isRefreshing}
+            className="p-1.5 rounded-md bg-white border border-slate-300 text-slate-600 hover:text-slate-900 shadow-xs transition"
+            title="Refresh Mart metrics"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin text-indigo-600' : ''}`} />
+          </button>
+
+          {/* Docs Link */}
           <a
-            href="http://localhost:8000/docs"
+            href="/docs"
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 hover:text-white text-xs font-medium transition"
+            className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-md bg-slate-900 hover:bg-slate-800 text-white text-xs font-medium shadow-xs transition"
           >
-            <span>FastAPI Docs</span>
-            <ExternalLink className="w-3.5 h-3.5" />
+            <span>API Docs</span>
+            <ExternalLink className="w-3.5 h-3.5 text-slate-300" />
           </a>
         </div>
       </div>
 
       {/* Revenue Trend Visualizer */}
-      <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-sm">
+      <div className="bg-white border border-slate-200 rounded-lg p-6 shadow-xs">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h3 className="text-base font-semibold text-white">30-Day Daily Gross Revenue Mart</h3>
-            <p className="text-xs text-slate-400">Aggregated by dbt and DuckDB analytical warehouse</p>
+            <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider font-mono">
+              {selectedDays}-Day Daily Gross Revenue Mart (DuckDB / dbt)
+            </h3>
+            <p className="text-[11px] text-slate-500 font-mono mt-0.5">Aggregated from Gold layer fact_orders</p>
           </div>
-          <span className="text-xs px-2.5 py-1 rounded bg-blue-950 text-blue-300 border border-blue-800">
-            mart_daily_revenue
+          <span className="text-[10px] font-mono px-2.5 py-0.5 rounded bg-blue-50 text-blue-800 border border-blue-200 font-bold">
+            MART_DAILY_REVENUE ({data?.daily_trends.length || 0} Days Returned)
           </span>
         </div>
 
         {/* CSS-based Bar Chart */}
-        <div className="space-y-3">
-          {data?.daily_trends.slice(0, 10).map((d) => {
+        <div className="space-y-3.5 font-mono">
+          {data?.daily_trends.slice(0, 15).map((d) => {
             const widthPct = Math.round((d.total_gross_revenue / maxRevenue) * 100);
             return (
               <div key={d.order_day} className="space-y-1">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="font-mono text-slate-300">{d.order_day}</span>
+                  <span className="text-slate-800 font-bold">{d.order_day}</span>
                   <div className="flex items-center space-x-4">
-                    <span className="text-slate-400">{d.total_orders.toLocaleString()} orders</span>
-                    <span className="font-mono font-bold text-emerald-400">
+                    <span className="text-slate-500 text-[11px] font-medium">{d.total_orders.toLocaleString()} orders</span>
+                    <span className="font-bold text-amber-800">
                       ${d.total_gross_revenue.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                     </span>
                   </div>
                 </div>
-                <div className="w-full bg-slate-800/80 rounded-full h-2.5 overflow-hidden">
+                <div className="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
                   <div
-                    className="bg-gradient-to-r from-blue-500 to-emerald-400 h-2.5 rounded-full transition-all duration-500"
+                    className="bg-gradient-to-r from-indigo-600 via-blue-600 to-emerald-500 h-2.5 rounded-full transition-all duration-500"
                     style={{ width: `${Math.max(5, widthPct)}%` }}
                   />
                 </div>
@@ -89,46 +171,48 @@ export const AnalyticsTab: React.FC = () => {
       {/* 2-Column: Regional & Product Category Performance */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Regional Revenue Breakdown */}
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-semibold text-white flex items-center">
-              <Globe className="w-4 h-4 mr-2 text-blue-400" />
-              Regional Sales Distribution
+        <div className="bg-white border border-slate-200 rounded-lg p-5 shadow-xs">
+          <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+            <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider font-mono flex items-center space-x-2">
+              <Globe className="w-4 h-4 text-indigo-600" />
+              <span>Regional Fulfillment Distribution</span>
             </h3>
-            <span className="text-xs text-slate-400">Total Volume</span>
+            <span className="text-[10px] font-mono text-slate-500 uppercase font-semibold">Gross Volume</span>
           </div>
-          <div className="divide-y divide-slate-800">
+          <div className="divide-y divide-slate-100">
             {data?.regional_breakdown.map((r) => (
-              <div key={r.region} className="py-2.5 flex items-center justify-between text-xs">
-                <span className="text-slate-300 font-medium">{r.region}</span>
-                <div className="flex items-center space-x-4">
-                  <span className="text-slate-400">{r.total_orders.toLocaleString()} orders</span>
-                  <span className="font-mono font-semibold text-white">
+              <div key={r.region} className="py-3 flex items-center justify-between font-mono text-xs">
+                <div>
+                  <div className="text-slate-900 font-bold font-sans">{r.region}</div>
+                  <div className="text-[11px] text-slate-500">{r.total_orders.toLocaleString()} fulfilled orders</div>
+                </div>
+                <div className="text-right">
+                  <div className="font-bold text-indigo-700">
                     ${r.total_revenue.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                  </span>
+                  </div>
                 </div>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Product Category Margins */}
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-semibold text-white flex items-center">
-              <Layers className="w-4 h-4 mr-2 text-violet-400" />
-              Category Gross Margin %
+        {/* Product Category Breakdown */}
+        <div className="bg-white border border-slate-200 rounded-lg p-5 shadow-xs">
+          <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+            <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider font-mono flex items-center space-x-2">
+              <Layers className="w-4 h-4 text-purple-600" />
+              <span>Category Margin &amp; Catalog Breadth</span>
             </h3>
-            <span className="text-xs text-slate-400">Average Profitability</span>
+            <span className="text-[10px] font-mono text-slate-500 uppercase font-semibold">Avg Margin</span>
           </div>
-          <div className="divide-y divide-slate-800">
+          <div className="space-y-3 font-mono">
             {data?.category_breakdown.map((c) => (
-              <div key={c.category} className="py-2.5 flex items-center justify-between text-xs">
+              <div key={c.category} className="p-3 rounded-md bg-slate-50/60 border border-slate-200 flex items-center justify-between">
                 <div>
-                  <span className="text-slate-300 font-medium">{c.category}</span>
-                  <span className="text-slate-500 ml-2">({c.product_count} SKUs)</span>
+                  <div className="text-xs font-bold text-slate-900 font-sans">{c.category}</div>
+                  <div className="text-[11px] text-slate-500">{c.product_count} active catalog SKUs</div>
                 </div>
-                <span className="font-mono font-bold text-emerald-400 px-2 py-0.5 rounded bg-emerald-950/60 border border-emerald-800">
+                <span className="font-bold text-emerald-800 px-2 py-0.5 rounded bg-emerald-50 border border-emerald-200 text-xs">
                   {c.avg_margin_pct}% Margin
                 </span>
               </div>
@@ -137,21 +221,25 @@ export const AnalyticsTab: React.FC = () => {
         </div>
       </div>
 
-      {/* Power BI Integration Banner */}
-      <div className="bg-gradient-to-r from-blue-950/40 via-slate-900 to-indigo-950/40 border border-blue-900/40 rounded-xl p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      {/* Warehouse Marts & dbt Semantic Layer Banner */}
+      <div className="bg-white border border-slate-200 rounded-lg p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 shadow-xs font-mono text-xs">
         <div>
-          <h4 className="text-sm font-bold text-white">Power BI Desktop Integration Layer Ready</h4>
-          <p className="text-xs text-slate-400 mt-1">
-            25+ DAX measures and pre-aggregated views available in <code className="text-blue-300">powerbi/dax_measures.dax</code>
+          <div className="flex items-center space-x-2">
+            <Database className="w-4 h-4 text-indigo-600" />
+            <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+              DuckDB &amp; BigQuery Star Schema Analytical Layer
+            </h4>
+          </div>
+          <p className="text-[11px] text-slate-600 mt-1 font-medium">
+            Curated dimensional marts and fact aggregations compiled via <code className="text-indigo-700 bg-indigo-50 px-1.5 py-0.5 rounded border border-indigo-200 font-bold">dbt/models/marts/</code>
           </p>
         </div>
         <div className="flex items-center space-x-2">
-          <span className="text-xs font-mono text-emerald-400 px-3 py-1 rounded bg-emerald-950 border border-emerald-800">
-            DirectQuery Enabled
+          <span className="text-[11px] text-emerald-800 px-3 py-1 rounded bg-emerald-50 border border-emerald-200 font-bold">
+            DBT RUN: CLEAN
           </span>
         </div>
       </div>
     </div>
   );
 };
-

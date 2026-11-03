@@ -4,7 +4,10 @@ __pycache__/
 *$py.class
 *.sqlite
 *.sqlite3
+*.sqlite-wal
+*.sqlite-shm
 *.duckdb
+*.duckdb.wal
 *.db
 
 # C extensions
