@@ -5,3 +5,4 @@ echo Launching Enterprise Real-Time Data Intelligence Platform...
 echo ======================================================================
 python run_all.py
 pause
+

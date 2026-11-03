@@ -10,9 +10,8 @@ from typing import Dict, Any, List, Optional
 
 
 class WarehouseManager:
-    def __init__(self, db_path: str = "data/analytics_dw.duckdb"):
-        self.db_path = os.path.abspath(db_path)
-        os.makedirs(os.path.dirname(self.db_path), exist_ok=True)
+    def __init__(self, db_path: str = ":memory:"):
+        self.db_path = db_path
         self.conn = duckdb.connect(self.db_path)
         self._register_views()
 
