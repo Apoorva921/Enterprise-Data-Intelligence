@@ -42,3 +42,4 @@ def test_batch_ingestor_bronze_write(tmp_path):
     assert len(bronze_df) == 2
     assert "_ingestion_timestamp" in bronze_df.columns
     assert "_batch_id" in bronze_df.columns
+

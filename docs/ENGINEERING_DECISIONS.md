@@ -32,3 +32,4 @@
 - **Context**: Streaming consumers can encounter poison-pill messages (unparseable JSON, schema constraint violations) that crash the consumer loop or stall partition offsets.
 - **Decision**: Wrap consumer message processing in validation blocks that divert unparseable messages to a dedicated `dead_letter_queue` topic and persistent store.
 - **Benefits**: Consumer offsets continue advancing without manual intervention; operators can inspect and replay poison messages from the React dashboard.
+

@@ -104,3 +104,4 @@ def run_spark_silver_cleaning(bronze_path: str = "data/lake/bronze", silver_path
 
 if __name__ == "__main__":
     run_spark_silver_cleaning()
+

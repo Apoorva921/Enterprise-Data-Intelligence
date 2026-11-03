@@ -13,3 +13,4 @@ WORKDIR /app
 COPY . /app
 
 USER 1001
+

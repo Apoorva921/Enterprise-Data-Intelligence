@@ -20,3 +20,4 @@ def lake_storage():
 @pytest.fixture(scope="session")
 def warehouse():
     return WarehouseManager()
+

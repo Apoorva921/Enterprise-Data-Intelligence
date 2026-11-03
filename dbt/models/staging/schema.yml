@@ -39,3 +39,4 @@ models:
       - name: unit_price
         tests:
           - not_null
+

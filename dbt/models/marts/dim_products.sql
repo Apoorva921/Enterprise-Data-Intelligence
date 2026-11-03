@@ -13,3 +13,4 @@ SELECT
     supplier_id,
     is_active
 FROM products
+

@@ -111,3 +111,4 @@ class BatchAPIClient:
             except Exception as e:
                 logger.error(f"Error fetching page {page} from {endpoint}: {e}")
                 break
+

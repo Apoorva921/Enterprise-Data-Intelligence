@@ -74,3 +74,4 @@ def verify_admin_token(credentials: Optional[HTTPAuthorizationCredentials] = Sec
             detail="Authentication token required for protected administrative endpoints",
         )
     return decode_access_token(credentials.credentials)
+

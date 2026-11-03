@@ -258,3 +258,4 @@ def get_data_quality():
     # If report file doesn't exist yet, run validation on-demand
     dq = DataQualityValidationRunner()
     return dq.run_complete_validation()
+

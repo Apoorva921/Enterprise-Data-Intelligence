@@ -127,3 +127,4 @@ class WebsiteEventSchema(BaseModel):
     device_type: str
     metadata: Dict[str, Any] = Field(default_factory=dict)
     is_simulated: bool = True
+

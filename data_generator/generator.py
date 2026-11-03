@@ -491,3 +491,4 @@ class ECommerceDataGenerator:
             print(f"   [OK] Saved {name}: {len(df):,} records -> {parquet_path}")
 
         return datasets
+

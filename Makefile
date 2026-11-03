@@ -44,3 +44,4 @@ docker-down:
 
 clean:
 	rm -rf data/bronze/* data/silver/* data/gold/* data/quarantine/* __pycache__ .pytest_cache
+

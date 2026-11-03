@@ -28,3 +28,4 @@ db.dead_letter_events.createIndex({ "failed_at": -1 });
 db.dead_letter_events.createIndex({ "topic": 1 });
 
 print("MongoDB collections and indexes initialized successfully for ecommerce_events.");
+

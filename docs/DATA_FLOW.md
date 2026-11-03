@@ -81,3 +81,4 @@
 4. **Dead-Letter Queue (DLQ)**:
    - Malformed events (e.g. negative prices, malformed JSON) are caught by Pydantic validators and routed to `dead_letter_queue`.
    - Saved to persistent log with diagnostic failure reason and original payload for operator review.
+

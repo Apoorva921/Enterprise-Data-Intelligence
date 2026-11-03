@@ -61,3 +61,4 @@ class QuarantineManager:
             return df.head(limit).to_dict(orient="records")
         except Exception:
             return []
+

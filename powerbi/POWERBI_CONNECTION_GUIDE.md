@@ -96,3 +96,4 @@ Navigate to the **Model View** tab in Power BI Desktop and configure the followi
 2. Open `powerbi/dax_measures.dax` in any text editor.
 3. Create the DAX measures one by one (e.g. `[Total Gross Revenue]`, `[Average Order Value (AOV)]`, `[Payment Success Rate %]`, `[Customer Lifetime Value]`).
 4. Format currency measures as `$#,##0.00` and percentage measures as `0.0%`.
+

@@ -40,3 +40,4 @@ def test_generate_orders_and_anomalies():
 
     has_negatives = (orders_df["total_amount"] < 0).any()
     assert has_negatives, "Expected intentional negative order values for DQ testing"
+

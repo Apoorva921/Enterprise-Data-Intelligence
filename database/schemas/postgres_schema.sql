@@ -155,3 +155,4 @@ CREATE TABLE IF NOT EXISTS inventory (
 
 CREATE INDEX IF NOT EXISTS idx_inventory_product ON inventory(product_id);
 CREATE INDEX IF NOT EXISTS idx_inventory_warehouse ON inventory(warehouse_id);
+

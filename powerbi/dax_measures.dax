@@ -134,3 +134,4 @@ DIVIDE(
     CALCULATE([Total Gross Revenue], ALL(fact_orders[shipping_region])),
     0
 ) * 100
+

@@ -17,3 +17,4 @@ SELECT
     DATE '9999-12-31' AS end_date,
     TRUE AS is_current
 FROM customers
+

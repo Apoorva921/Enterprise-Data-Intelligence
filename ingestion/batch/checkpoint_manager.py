@@ -63,3 +63,4 @@ class CheckpointManager:
         """, (pipeline_id, last_checkpoint, records_count, status, now))
         conn.commit()
         conn.close()
+

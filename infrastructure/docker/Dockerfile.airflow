@@ -12,3 +12,4 @@ RUN pip install --no-cache-dir -r /requirements.txt
 
 COPY airflow/dags /opt/airflow/dags
 COPY airflow/airflow.cfg /opt/airflow/airflow.cfg
+

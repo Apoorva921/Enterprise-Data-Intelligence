@@ -7,3 +7,4 @@ from .generator import ECommerceDataGenerator
 from .config import GeneratorConfig
 
 __all__ = ["ECommerceDataGenerator", "GeneratorConfig"]
+

@@ -10,3 +10,4 @@ SELECT
 FROM orders
 GROUP BY CAST(order_date AS DATE)
 ORDER BY order_date DESC
+

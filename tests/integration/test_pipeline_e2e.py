@@ -23,3 +23,4 @@ def test_dbt_models_and_tests_pass(warehouse):
     test_res = runner.run_tests()
     assert test_res["passed"] == 5
     assert test_res["failed"] == 0
+

@@ -158,3 +158,4 @@ resource "aws_iam_role_policy_attachment" "attach_lake_policy" {
   role       = aws_iam_role.pipeline_execution_role.name
   policy_arn = aws_iam_policy.lake_read_write_policy.arn
 }
+

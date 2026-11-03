@@ -8,7 +8,9 @@ import {
   RevenueAnalytics,
 } from '../types';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+const API_BASE = (typeof window !== 'undefined' && window.location.port === '3000')
+  ? 'http://localhost:8000'
+  : '';
 
 export async function fetchHealth(): Promise<any> {
   const res = await fetch(`${API_BASE}/api/health`);
@@ -67,3 +69,4 @@ export async function fetchOrders(page = 1, pageSize = 15): Promise<any> {
   const res = await fetch(`${API_BASE}/api/orders?page=${page}&page_size=${pageSize}`);
   return res.json();
 }
+

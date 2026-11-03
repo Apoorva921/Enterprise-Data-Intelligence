@@ -1,11 +1,14 @@
 """
 FastAPI Application Entry Point.
 Enterprise Real-Time Data Intelligence Platform.
+Serves both the REST API endpoints and the unified React + TypeScript Dashboard.
 """
 import os
 import sys
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 
 # Ensure platform root is in sys.path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
@@ -21,7 +24,7 @@ app = FastAPI(
     redoc_url="/redoc",
 )
 
-# CORS Middleware for React frontend
+# CORS Middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -30,30 +33,34 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include API Router
+# Include API Router (MUST be included before mounting root static files)
 app.include_router(router)
 
-
-@app.get("/")
-def root():
-    return {
-        "platform": settings.app_name,
-        "version": "1.0.0",
-        "status": "OPERATIONAL",
-        "docs": "/docs",
-        "api_endpoints": {
-            "health": "/api/health",
-            "kpis": "/api/kpis",
-            "revenue": "/api/revenue",
-            "orders": "/api/orders",
-            "customers": "/api/customers",
-            "products": "/api/products",
-            "pipelines": "/api/pipelines",
-            "streaming": "/api/streaming/status",
-            "data_quality": "/api/data-quality",
-            "metrics": "/api/metrics",
-        },
-    }
+# Mount compiled React frontend if present
+frontend_dist = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "frontend", "dist")
+if os.path.exists(frontend_dist):
+    app.mount("/", StaticFiles(directory=frontend_dist, html=True), name="frontend")
+else:
+    @app.get("/")
+    def root():
+        return {
+            "platform": settings.app_name,
+            "version": "1.0.0",
+            "status": "OPERATIONAL",
+            "docs": "/docs",
+            "api_endpoints": {
+                "health": "/api/health",
+                "kpis": "/api/kpis",
+                "revenue": "/api/revenue",
+                "orders": "/api/orders",
+                "customers": "/api/customers",
+                "products": "/api/products",
+                "pipelines": "/api/pipelines",
+                "streaming": "/api/streaming/status",
+                "data_quality": "/api/data-quality",
+                "metrics": "/api/metrics",
+            },
+        }
 
 
 if __name__ == "__main__":

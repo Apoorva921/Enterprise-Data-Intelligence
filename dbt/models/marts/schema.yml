@@ -36,3 +36,4 @@ models:
       - name: total_revenue
         tests:
           - not_null
+

@@ -70,3 +70,4 @@ class BatchIngestor:
             else:
                 logger.warning(f"No source data file found for entity '{ent}' in {raw_dir}")
         return results
+

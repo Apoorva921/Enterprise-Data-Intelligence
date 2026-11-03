@@ -25,3 +25,4 @@ ecommerce_dw:
       dbname: "{{ env_var('POSTGRES_DB', 'ecommerce_dw') }}"
       schema: analytics
       threads: 4
+

@@ -12,3 +12,4 @@ SELECT
     ROUND(SUM(CASE WHEN p.is_successful THEN 1 ELSE 0 END) * 100.0 / COUNT(p.payment_id), 2) AS payment_success_rate
 FROM orders o
 LEFT JOIN payments p ON o.order_id = p.order_id
+

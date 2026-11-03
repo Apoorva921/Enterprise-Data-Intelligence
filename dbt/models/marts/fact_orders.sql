@@ -16,3 +16,4 @@ SELECT
     shipping_region,
     channel
 FROM orders
+

@@ -16,3 +16,4 @@ SELECT
     order_year_month
 FROM source
 WHERE total_amount > 0 AND customer_id != 'CUST-NONEXISTENT'
+

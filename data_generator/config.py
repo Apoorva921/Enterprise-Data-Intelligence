@@ -81,3 +81,4 @@ class GeneratorConfig:
     device_types: List[str] = field(
         default_factory=lambda: ["desktop", "mobile_ios", "mobile_android", "tablet"]
     )
+

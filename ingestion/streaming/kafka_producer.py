@@ -149,3 +149,4 @@ class ECommerceStreamProducer:
             "currency": "USD",
             "payment_date": datetime.now(timezone.utc).isoformat(),
         }
+

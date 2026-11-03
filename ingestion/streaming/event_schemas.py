@@ -64,3 +64,4 @@ class StreamInventoryEvent(BaseModel):
     quantity_changed: int
     stock_level_after: int
     timestamp: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+

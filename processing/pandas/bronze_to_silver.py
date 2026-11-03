@@ -190,3 +190,4 @@ class BronzeToSilverPipeline:
         self.process_inventory()
         logger.info("Bronze -> Silver pipeline completed successfully.")
         return self.summary_stats
+

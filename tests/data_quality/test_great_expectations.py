@@ -23,3 +23,4 @@ def test_data_quality_validation_suite():
     assert quarantine["total_quarantined_records"] > 0
     assert "orders" in quarantine["entities"]
     assert "customers" in quarantine["entities"]
+

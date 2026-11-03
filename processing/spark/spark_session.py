@@ -32,3 +32,4 @@ def get_spark_session(app_name: str = "EnterpriseDataPlatform") -> Optional[Any]
     except Exception as e:
         logger.warning(f"PySpark not available in local host environment: {e}. PySpark scripts will use dual-engine fallback.")
         return None
+

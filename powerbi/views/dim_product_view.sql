@@ -11,3 +11,4 @@ SELECT
     p.gross_margin_pct,
     p.supplier_id
 FROM dim_products p;
+

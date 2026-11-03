@@ -13,3 +13,4 @@ SELECT
     is_active
 FROM source
 WHERE price > 0
+

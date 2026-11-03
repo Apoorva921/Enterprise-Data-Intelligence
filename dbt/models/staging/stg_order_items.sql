@@ -11,3 +11,4 @@ SELECT
     CAST(total_price AS DECIMAL(12, 2)) AS total_price
 FROM source
 WHERE quantity > 0
+

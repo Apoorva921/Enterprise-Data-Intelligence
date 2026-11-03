@@ -89,3 +89,4 @@ SELECT
 FROM `enterprise_dw.fact_orders`
 GROUP BY report_date
 ORDER BY report_date DESC;
+

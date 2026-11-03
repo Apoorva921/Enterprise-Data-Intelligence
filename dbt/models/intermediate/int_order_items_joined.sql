@@ -19,3 +19,4 @@ SELECT
     ROUND(i.total_price - (i.quantity * p.unit_cost), 2) AS gross_profit
 FROM items i
 JOIN products p ON i.product_id = p.product_id
+

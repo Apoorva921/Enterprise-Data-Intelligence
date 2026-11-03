@@ -13,3 +13,4 @@ SELECT
     c.end_date,
     c.is_current
 FROM dim_customers c;
+

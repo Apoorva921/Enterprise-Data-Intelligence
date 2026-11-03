@@ -19,3 +19,4 @@ SELECT
     CAST(updated_at AS TIMESTAMP) AS updated_at
 FROM source
 WHERE email IS NOT NULL AND customer_id IS NOT NULL
+

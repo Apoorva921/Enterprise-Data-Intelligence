@@ -85,3 +85,4 @@ class WarehouseManager:
 
     def close(self):
         self.conn.close()
+

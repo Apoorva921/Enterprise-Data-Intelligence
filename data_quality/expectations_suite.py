@@ -123,3 +123,4 @@ class QualityExpectationsSuite:
             "unexpected_percent": round(orphan_count / len(child_df) * 100, 2) if len(child_df) > 0 else 0,
             "details": f"{orphan_count} orphaned foreign keys detected" if not success else "Referential integrity intact"
         }
+

@@ -51,3 +51,4 @@ def run_spark_scd2(silver_customers_path: str = "data/lake/silver/customers", go
 
 if __name__ == "__main__":
     run_spark_scd2()
+

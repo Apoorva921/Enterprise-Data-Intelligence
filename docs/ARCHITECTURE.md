@@ -94,3 +94,4 @@ The platform implements a cloud-native **Medallion Lakehouse Architecture** capa
 - **Reliability & Idempotency**:
   - Sliding deduplication window in the consumer group prevents duplicate event processing.
   - Schema validation catches schema drift or invalid types; failing messages are routed to DLQ with stacktrace headers.
+

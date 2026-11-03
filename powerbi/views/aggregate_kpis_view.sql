@@ -8,3 +8,4 @@ SELECT
     d.avg_order_value,
     ROUND((d.completed_orders * 100.0 / NULLIF(d.total_orders, 0)), 2) AS completion_rate_pct
 FROM mart_daily_revenue d;
+

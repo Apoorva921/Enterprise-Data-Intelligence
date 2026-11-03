@@ -13,3 +13,4 @@ SELECT
     CAST(payment_date AS TIMESTAMP) AS payment_date,
     CASE WHEN payment_status = 'SUCCESS' THEN TRUE ELSE FALSE END AS is_successful
 FROM source
+

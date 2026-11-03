@@ -68,3 +68,4 @@ def run_spark_gold_aggregation(silver_path: str = "data/lake/silver", gold_path:
 
 if __name__ == "__main__":
     run_spark_gold_aggregation()
+

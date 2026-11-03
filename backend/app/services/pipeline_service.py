@@ -34,3 +34,4 @@ class PipelineService:
 
     def trigger_pipeline(self, dag_id: str) -> Dict[str, Any]:
         return self.runner.run_dag(dag_id)
+

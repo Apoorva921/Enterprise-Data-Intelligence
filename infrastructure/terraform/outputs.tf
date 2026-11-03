@@ -22,3 +22,4 @@ output "pipeline_iam_role_arn" {
   description = "ARN of the IAM role used by ETL pipelines"
   value       = aws_iam_role.pipeline_execution_role.arn
 }
+

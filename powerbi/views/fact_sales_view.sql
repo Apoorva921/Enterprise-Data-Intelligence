@@ -15,3 +15,4 @@ SELECT
     f.shipping_region,
     f.channel
 FROM fact_orders f;
+

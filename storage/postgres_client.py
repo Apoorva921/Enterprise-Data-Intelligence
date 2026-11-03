@@ -93,3 +93,4 @@ class DatabaseClient:
     def close(self):
         if self.conn:
             self.conn.close()
+

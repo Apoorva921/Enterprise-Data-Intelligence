@@ -32,3 +32,4 @@ def test_scd2_customer_dimension(lake_storage):
     retired = dim_cust[dim_cust["is_current"] == False]
     assert len(retired) > 0, "Expected historical SCD2 retired versions"
     assert (retired["end_date"] != "9999-12-31").all()
+

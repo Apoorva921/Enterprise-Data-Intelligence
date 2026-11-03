@@ -6,3 +6,4 @@ SELECT
 FROM {{ ref('stg_payments') }} p
 LEFT JOIN {{ ref('stg_orders') }} o ON p.order_id = o.order_id
 WHERE o.order_id IS NULL
+
