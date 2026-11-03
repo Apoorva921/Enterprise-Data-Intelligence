@@ -1,0 +1,27 @@
+ecommerce_dw:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: "data/analytics_dw.duckdb"
+      threads: 4
+
+    bigquery_prod:
+      type: bigquery
+      method: service-account
+      project: "{{ env_var('GCP_PROJECT_ID', 'enterprise-data-intelligence') }}"
+      dataset: enterprise_dw
+      threads: 8
+      keyfile: "{{ env_var('GOOGLE_APPLICATION_CREDENTIALS', 'credentials/bigquery-sa.json') }}"
+      location: US
+      priority: interactive
+
+    postgres_dev:
+      type: postgres
+      host: "{{ env_var('POSTGRES_HOST', 'localhost') }}"
+      user: "{{ env_var('POSTGRES_USER', 'postgres') }}"
+      password: "{{ env_var('POSTGRES_PASSWORD', 'postgrespassword') }}"
+      port: 5432
+      dbname: "{{ env_var('POSTGRES_DB', 'ecommerce_dw') }}"
+      schema: analytics
+      threads: 4

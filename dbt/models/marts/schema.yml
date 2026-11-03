@@ -1,0 +1,38 @@
+version: 2
+
+models:
+  - name: fact_orders
+    description: "Central sales transaction fact table."
+    columns:
+      - name: order_key
+        tests:
+          - unique
+          - not_null
+      - name: customer_id
+        tests:
+          - not_null
+      - name: total_amount
+        tests:
+          - not_null
+
+  - name: dim_customers
+    description: "Analytics customer dimension with SCD2 keys."
+    columns:
+      - name: customer_key
+        tests:
+          - unique
+          - not_null
+      - name: is_current
+        tests:
+          - not_null
+
+  - name: mart_daily_revenue
+    description: "Daily aggregated revenue metrics."
+    columns:
+      - name: order_date
+        tests:
+          - unique
+          - not_null
+      - name: total_revenue
+        tests:
+          - not_null

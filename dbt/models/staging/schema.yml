@@ -1,0 +1,41 @@
+version: 2
+
+models:
+  - name: stg_customers
+    description: "Cleaned and validated customer base."
+    columns:
+      - name: customer_id
+        description: "Primary key for customers"
+        tests:
+          - unique
+          - not_null
+      - name: email
+        tests:
+          - not_null
+
+  - name: stg_orders
+    description: "Cleaned and deduplicated orders."
+    columns:
+      - name: order_id
+        description: "Primary key for orders"
+        tests:
+          - unique
+          - not_null
+      - name: total_amount
+        tests:
+          - not_null
+      - name: order_status
+        tests:
+          - accepted_values:
+              values: ['COMPLETED', 'PENDING', 'PROCESSING', 'SHIPPED', 'CANCELLED', 'REFUNDED']
+
+  - name: stg_products
+    description: "Cleaned product catalog."
+    columns:
+      - name: product_id
+        tests:
+          - unique
+          - not_null
+      - name: unit_price
+        tests:
+          - not_null

@@ -1,0 +1,103 @@
+erDiagram
+    CUSTOMERS ||--o{ ORDERS : places
+    CUSTOMERS ||--o{ CUSTOMER_SESSIONS : initiates
+    CUSTOMERS {
+        string customer_id PK
+        string first_name
+        string last_name
+        string email
+        string region
+        string segment
+        string account_status
+        timestamp created_at
+    }
+
+    PRODUCTS ||--o{ ORDER_ITEMS : contains
+    PRODUCTS ||--o{ INVENTORY : stocked_in
+    PRODUCTS {
+        string product_id PK
+        string sku
+        string name
+        string category
+        decimal price
+        decimal cost
+        string supplier_id
+    }
+
+    ORDERS ||--|{ ORDER_ITEMS : includes
+    ORDERS ||--o{ PAYMENTS : pays_for
+    ORDERS ||--o{ REFUNDS : refunded_by
+    ORDERS {
+        string order_id PK
+        string customer_id FK
+        timestamp order_date
+        string status
+        decimal subtotal
+        decimal shipping_fee
+        decimal tax_amount
+        decimal total_amount
+        string shipping_region
+        string channel
+    }
+
+    ORDER_ITEMS {
+        string order_item_id PK
+        string order_id FK
+        string product_id FK
+        integer quantity
+        decimal unit_price
+        decimal discount_amount
+        decimal total_price
+    }
+
+    PAYMENTS {
+        string payment_id PK
+        string order_id FK
+        string customer_id
+        string payment_method
+        string payment_status
+        string transaction_id
+        decimal amount
+        timestamp payment_date
+    }
+
+    REFUNDS {
+        string refund_id PK
+        string order_id FK
+        string payment_id
+        decimal refund_amount
+        string refund_reason
+        string status
+        timestamp refund_date
+    }
+
+    INVENTORY {
+        string inventory_id PK
+        string product_id FK
+        string warehouse_id
+        integer stock_level
+        integer reserved_stock
+        decimal unit_cost
+        timestamp last_restocked_at
+    }
+
+    CUSTOMER_SESSIONS ||--o{ WEBSITE_EVENTS : generates
+    CUSTOMER_SESSIONS {
+        string session_id PK
+        string customer_id FK
+        timestamp session_start
+        timestamp session_end
+        integer duration_seconds
+        string platform
+        string referrer
+    }
+
+    WEBSITE_EVENTS {
+        string event_id PK
+        string session_id FK
+        string customer_id FK
+        string event_type
+        string page_url
+        timestamp timestamp
+        json metadata
+    }

@@ -1,0 +1,28 @@
+# Core Data Platform Dependencies
+fastapi>=0.110.0
+uvicorn[standard]>=0.28.0
+pydantic>=2.6.0
+pydantic-settings>=2.2.0
+python-multipart>=0.0.9
+requests>=2.31.0
+faker>=24.0.0
+numpy>=1.26.0
+pandas>=2.2.0
+pyarrow>=15.0.0
+duckdb>=0.10.0
+pytest>=8.0.0
+httpx>=0.27.0
+psutil>=5.9.0
+prometheus-client>=0.20.0
+python-jose[cryptography]>=3.3.0
+passlib[bcrypt]>=1.7.4
+
+# Optional / Cloud & Big Data Drivers (Used in Docker or Production Cloud)
+# psycopg2-binary>=2.9.9
+# pymongo>=4.6.0
+# kafka-python>=2.0.2
+# pyspark>=3.5.0
+# dbt-core>=1.7.0
+# dbt-duckdb>=1.7.0
+# great-expectations>=0.18.0
+# boto3>=1.34.0

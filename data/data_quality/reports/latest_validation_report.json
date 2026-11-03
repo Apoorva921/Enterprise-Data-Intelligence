@@ -1,0 +1,182 @@
+{
+  "audit_id": "dq_20261103_182506",
+  "generated_at": "2026-11-03T18:25:06.276375+00:00",
+  "bronze_audit": {
+    "suite_name": "bronze_raw_ingestion_suite",
+    "layer": "BRONZE",
+    "timestamp": "2026-11-03T18:25:05.639574+00:00",
+    "total_checks": 8,
+    "passed_checks": 5,
+    "failed_checks": 3,
+    "quality_score_pct": 62.5,
+    "expectations": [
+      {
+        "expectation": "expect_column_to_exist",
+        "column": "order_id",
+        "success": true,
+        "details": "Column 'order_id' exists in dataset."
+      },
+      {
+        "expectation": "expect_column_values_to_not_be_null",
+        "column": "order_id",
+        "success": true,
+        "unexpected_count": 0,
+        "unexpected_percent": 0.0,
+        "details": "No null values found"
+      },
+      {
+        "expectation": "expect_column_values_to_be_unique",
+        "column": "order_id",
+        "success": false,
+        "unexpected_count": 1000,
+        "unexpected_percent": 0.99,
+        "details": "1000 duplicate keys detected"
+      },
+      {
+        "expectation": "expect_column_values_to_be_between",
+        "column": "total_amount",
+        "success": false,
+        "min_value": 0.01,
+        "max_value": 50000.0,
+        "unexpected_count": 508,
+        "unexpected_percent": 0.5,
+        "details": "508 values outside [0.01, 50000.0]"
+      },
+      {
+        "expectation": "expect_column_values_to_be_in_set",
+        "column": "status",
+        "success": true,
+        "unexpected_count": 0,
+        "unexpected_percent": 0.0,
+        "details": "All values in permitted set"
+      },
+      {
+        "expectation": "expect_column_to_exist",
+        "column": "customer_id",
+        "success": true,
+        "details": "Column 'customer_id' exists in dataset."
+      },
+      {
+        "expectation": "expect_column_values_to_not_be_null",
+        "column": "customer_id",
+        "success": true,
+        "unexpected_count": 0,
+        "unexpected_percent": 0.0,
+        "details": "No null values found"
+      },
+      {
+        "expectation": "expect_column_values_to_match_regex",
+        "column": "email",
+        "success": false,
+        "unexpected_count": 50,
+        "unexpected_percent": 1.0,
+        "details": "50 values failed regex pattern"
+      }
+    ]
+  },
+  "silver_audit": {
+    "suite_name": "silver_cleaned_conformance_suite",
+    "layer": "SILVER",
+    "timestamp": "2026-11-03T18:25:06.219129+00:00",
+    "total_checks": 7,
+    "passed_checks": 7,
+    "failed_checks": 0,
+    "quality_score_pct": 100.0,
+    "expectations": [
+      {
+        "expectation": "expect_column_values_to_not_be_null",
+        "column": "order_id",
+        "success": true,
+        "unexpected_count": 0,
+        "unexpected_percent": 0.0,
+        "details": "No null values found"
+      },
+      {
+        "expectation": "expect_column_values_to_be_unique",
+        "column": "order_id",
+        "success": true,
+        "unexpected_count": 0,
+        "unexpected_percent": 0.0,
+        "details": "All keys unique"
+      },
+      {
+        "expectation": "expect_column_values_to_be_between",
+        "column": "total_amount",
+        "success": true,
+        "min_value": 0.01,
+        "max_value": 50000.0,
+        "unexpected_count": 0,
+        "unexpected_percent": 0.0,
+        "details": "All values within bounds"
+      },
+      {
+        "expectation": "expect_referential_integrity",
+        "child_column": "customer_id",
+        "parent_column": "customer_id",
+        "success": true,
+        "unexpected_count": 0,
+        "unexpected_percent": 0.0,
+        "details": "Referential integrity intact"
+      },
+      {
+        "expectation": "expect_column_values_to_be_unique",
+        "column": "customer_id",
+        "success": true,
+        "unexpected_count": 0,
+        "unexpected_percent": 0.0,
+        "details": "All keys unique"
+      },
+      {
+        "expectation": "expect_column_values_to_match_regex",
+        "column": "email",
+        "success": true,
+        "unexpected_count": 0,
+        "unexpected_percent": 0.0,
+        "details": "All values matched pattern"
+      },
+      {
+        "expectation": "expect_column_values_to_be_between",
+        "column": "price",
+        "success": true,
+        "min_value": 0.01,
+        "max_value": 10000.0,
+        "unexpected_count": 0,
+        "unexpected_percent": 0.0,
+        "details": "All values within bounds"
+      }
+    ]
+  },
+  "quarantine_summary": {
+    "total_quarantined_records": 12882,
+    "entities": {
+      "customers": {
+        "count": 450,
+        "top_rejection_reasons": {
+          "Malformed email address syntax": 450
+        }
+      },
+      "products": {
+        "count": 0,
+        "top_rejection_reasons": {}
+      },
+      "orders": {
+        "count": 12432,
+        "top_rejection_reasons": {
+          "Orphaned customer_id 'CUST-NONEXI'": 2988,
+          "Negative or zero total_amount": 2958,
+          "Orphaned customer_id 'CUST-103757'": 216
+        }
+      },
+      "order_items": {
+        "count": 0,
+        "top_rejection_reasons": {}
+      },
+      "payments": {
+        "count": 0,
+        "top_rejection_reasons": {}
+      }
+    },
+    "generated_at": "2026-11-03T18:25:06.276331+00:00"
+  },
+  "is_silver_production_ready": true
+}

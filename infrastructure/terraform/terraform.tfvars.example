@@ -1,0 +1,4 @@
+aws_region          = "us-east-1"
+environment         = "prod"
+project_name        = "ecommerce-data-platform"
+data_retention_days = 90
